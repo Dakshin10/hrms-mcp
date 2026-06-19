@@ -1,0 +1,76 @@
+Employee_ID,First_Name,Last_Name,Email,Phone_Number,Department,Job_Title,Employment_Type,Date_of_Joining,Date_of_Birth,Gender,Annual_Salary_INR,Manager_ID,Status,Location
+EMP0001,Arun,Singh,arun.singh@hrms.in,+91 7081946048,Marketing,Content Strategist,Full-Time,2016-02-24,2000-03-06,Female,2587400,—,Active,Coimbatore
+EMP0002,Ananya,Kumar,ananya.kumar@hrms.in,+91 7307038657,Marketing,Growth Hacker,Full-Time,2021-04-17,1989-06-17,Female,3241600,—,Active,Hyderabad
+EMP0003,Sachin,Mehta,sachin.mehta@hrms.in,+91 7911510851,Finance,Payroll Specialist,Full-Time,2016-09-28,1989-10-30,Female,1711800,—,Active,Coimbatore
+EMP0004,Deepa,Joshi,deepa.joshi@hrms.in,+91 9777055082,Customer Success,Onboarding Specialist,Contract,2023-03-08,1995-04-22,Female,1887700,—,Active,Pune
+EMP0005,Arun,Das,arun.das@hrms.in,+91 9901457400,Customer Success,Support Specialist,Part-Time,2015-07-07,1999-11-01,Male,1513800,—,Terminated,Hyderabad
+EMP0006,Deepa,Rao,deepa.rao@hrms.in,+91 7910869429,Product,Associate PM,Full-Time,2017-05-08,2000-01-13,Male,3167000,—,Active,Kochi
+EMP0007,Arun,Gupta,arun.gupta@hrms.in,+91 8750242087,Finance,Payroll Specialist,Full-Time,2025-05-18,1999-05-10,Female,1221100,—,Active,Bengaluru
+EMP0008,Jatin,Bose,jatin.bose@hrms.in,+91 7105151347,Sales,Business Development Manager,Full-Time,2025-03-29,1997-09-21,Female,1619900,—,Active,Kolkata
+EMP0009,Rajesh,Roy,rajesh.roy@hrms.in,+91 9996794259,Legal,Compliance Officer,Full-Time,2017-10-07,2001-09-16,Female,1402000,—,Active,Coimbatore
+EMP0010,Vijay,Rao,vijay.rao@hrms.in,+91 8186138746,Finance,CFO,Full-Time,2023-06-23,1986-01-21,Female,941100,—,Active,Coimbatore
+EMP0011,Yash,Verma,yash.verma@hrms.in,+91 8260860019,Customer Success,CX Lead,Full-Time,2025-11-21,1997-05-30,Female,348200,EMP0002,Active,Ahmedabad
+EMP0012,Karthik,Reddy,karthik.reddy@hrms.in,+91 9518594012,Product,Product Manager,Full-Time,2016-10-09,1995-03-06,Male,3328700,EMP0005,Resigned,Mumbai
+EMP0013,Sneha,Dey,sneha.dey@hrms.in,+91 7348691959,Operations,COO,Full-Time,2016-09-18,1993-05-22,Female,2562300,EMP0009,Active,Kochi
+EMP0014,Nandini,Malhotra,nandini.malhotra@hrms.in,+91 7063824662,Product,Product Analyst,Full-Time,2017-09-13,1997-09-22,Female,659300,EMP0008,Active,Ahmedabad
+EMP0015,Lavanya,Patel,lavanya.patel@hrms.in,+91 7420796474,Legal,CLO,Full-Time,2020-12-01,1998-08-10,Male,1188300,EMP0009,Active,Hyderabad
+EMP0016,Hema,Iyer,hema.iyer@hrms.in,+91 8307498039,Product,UX Researcher,Contract,2020-01-24,1987-09-19,Male,568500,EMP0006,Active,Ahmedabad
+EMP0017,Jatin,Mehta,jatin.mehta@hrms.in,+91 7721610942,Human Resources,HR Executive,Full-Time,2025-02-25,1985-09-15,Female,597200,EMP0009,Active,Kolkata
+EMP0018,Isha,Shah,isha.shah@hrms.in,+91 7433584847,Customer Success,CX Lead,Full-Time,2020-04-21,1994-02-17,Male,706600,EMP0007,Active,Coimbatore
+EMP0019,Sanjay,Ghosh,sanjay.ghosh@hrms.in,+91 9389017100,Human Resources,HR Executive,Full-Time,2018-10-21,2002-12-16,Female,1342900,EMP0004,Active,Kolkata
+EMP0020,Divya,Bhat,divya.bhat@hrms.in,+91 7601246509,Legal,Compliance Officer,Contract,2015-11-05,1994-12-10,Female,2608200,EMP0002,Active,Ahmedabad
+EMP0021,Aarav,Verma,aarav.verma@hrms.in,+91 9469240982,Finance,Payroll Specialist,Full-Time,2017-05-25,1993-12-30,Female,990500,EMP0007,Active,Coimbatore
+EMP0022,Kiran,Dey,kiran.dey@hrms.in,+91 9569269638,Operations,Process Improvement Lead,Full-Time,2023-03-12,2002-07-28,Female,3313200,EMP0008,Active,Pune
+EMP0023,Isha,Sharma,isha.sharma@hrms.in,+91 8897881066,Engineering,Tech Lead,Full-Time,2021-07-20,1995-09-11,Female,2527700,EMP0003,Active,Ahmedabad
+EMP0024,Chetan,Ghosh,chetan.ghosh@hrms.in,+91 7608918981,Customer Success,Customer Success Manager,Full-Time,2017-08-21,1994-01-21,Male,2689400,EMP0004,Active,Bengaluru
+EMP0025,Zara,Verma,zara.verma@hrms.in,+91 8373796163,Customer Success,Head of CS,Full-Time,2025-06-25,1990-11-07,Male,3303900,EMP0006,Active,Coimbatore
+EMP0026,Divya,Pandey,divya.pandey@hrms.in,+91 9115149321,Legal,Contract Manager,Contract,2025-06-29,1986-08-18,Male,2905300,EMP0010,Terminated,Chennai
+EMP0027,Tanvi,Nair,tanvi.nair@hrms.in,+91 8657644760,Finance,Finance Manager,Contract,2024-11-10,1990-06-25,Male,961600,EMP0008,Active,Pune
+EMP0028,Zara,Srivastava,zara.srivastava@hrms.in,+91 9142979329,Engineering,QA Engineer,Full-Time,2022-06-10,1987-04-29,Female,863300,EMP0005,Active,Chennai
+EMP0029,Jai,Shah,jai.shah@hrms.in,+91 7509345697,Operations,COO,Full-Time,2018-11-05,1989-07-26,Female,1407200,EMP0009,Active,Bengaluru
+EMP0030,Chetan,Choudhary,chetan.choudhary@hrms.in,+91 8387946265,Engineering,Software Engineer,Full-Time,2016-06-19,1999-04-17,Non-Binary,977700,EMP0008,Active,Coimbatore
+EMP0031,Varun,Kumar,varun.kumar@hrms.in,+91 7366519862,Finance,CFO,Full-Time,2019-02-21,1998-01-24,Female,2102700,EMP0003,Active,Delhi
+EMP0032,Ananya,Roy,ananya.roy@hrms.in,+91 8172437535,Marketing,Marketing Executive,Full-Time,2021-04-12,1994-02-12,Non-Binary,3443500,EMP0003,On Leave,Hyderabad
+EMP0033,Farhan,Srivastava,farhan.srivastava@hrms.in,+91 9656733206,Sales,Sales Executive,Full-Time,2025-05-14,1992-06-14,Female,2026800,EMP0004,Active,Chennai
+EMP0034,Rahul,Ghosh,rahul.ghosh@hrms.in,+91 7126871694,Marketing,Content Strategist,Contract,2020-02-29,1992-11-04,Male,1254600,EMP0004,Active,Hyderabad
+EMP0035,Rajesh,Menon,rajesh.menon@hrms.in,+91 7912919099,Operations,Supply Chain Executive,Full-Time,2019-06-26,2000-03-29,Non-Binary,2549100,EMP0006,On Leave,Chennai
+EMP0036,Kiran,Gupta,kiran.gupta@hrms.in,+91 8902444795,Engineering,Software Engineer,Full-Time,2018-11-16,2001-05-05,Female,2130400,EMP0010,Terminated,Chennai
+EMP0037,Rahul,Roy,rahul.roy@hrms.in,+91 8889334914,Operations,Operations Analyst,Part-Time,2015-01-07,1996-08-30,Female,2558400,EMP0004,Active,Chennai
+EMP0038,Chandra,Dey,chandra.dey@hrms.in,+91 8081991678,Product,Product Manager,Part-Time,2018-05-15,1996-05-17,Male,2012900,EMP0006,Active,Pune
+EMP0039,Varun,Patel,varun.patel@hrms.in,+91 7628665108,Sales,Account Manager,Full-Time,2018-05-17,1994-02-09,Female,301700,EMP0005,Active,Coimbatore
+EMP0040,Vijay,Das,vijay.das@hrms.in,+91 9145352237,Legal,Legal Associate,Full-Time,2017-05-25,1996-06-19,Male,3386800,EMP0003,Active,Pune
+EMP0041,Sneha,Pandey,sneha.pandey@hrms.in,+91 9074091167,Product,Product Manager,Contract,2023-06-04,1990-04-09,Female,1242200,EMP0004,Active,Bengaluru
+EMP0042,Kavya,Malhotra,kavya.malhotra@hrms.in,+91 9003019545,Legal,Legal Associate,Contract,2021-06-15,1989-05-12,Female,1910500,EMP0008,Active,Mumbai
+EMP0043,Bala,Mishra,bala.mishra@hrms.in,+91 7018123970,Sales,Account Manager,Full-Time,2025-09-28,2000-08-10,Female,510600,EMP0009,Active,Chennai
+EMP0044,Sanjay,Patel,sanjay.patel@hrms.in,+91 9626070901,Data & Analytics,Analytics Manager,Full-Time,2025-08-27,2001-12-10,Female,2869600,EMP0009,Active,Ahmedabad
+EMP0045,Sachin,Roy,sachin.roy@hrms.in,+91 7521572216,Legal,Contract Manager,Part-Time,2024-06-02,1999-04-21,Male,2486500,EMP0008,Active,Pune
+EMP0046,Sachin,Verma,sachin.verma@hrms.in,+91 9338147450,Marketing,SEO Analyst,Full-Time,2025-01-05,1997-02-11,Male,932600,EMP0004,Active,Mumbai
+EMP0047,Hema,Nair,hema.nair@hrms.in,+91 7210464377,Sales,Business Development Manager,Full-Time,2019-08-31,1986-05-26,Male,2062200,EMP0007,Active,Kochi
+EMP0048,Ganesh,Kumar,ganesh.kumar@hrms.in,+91 9807385456,Sales,Sales Head,Full-Time,2018-12-11,1991-09-13,Female,2057500,EMP0009,Active,Ahmedabad
+EMP0049,Yash,Roy,yash.roy@hrms.in,+91 7722673993,Marketing,SEO Analyst,Full-Time,2015-04-29,1993-09-21,Male,3148500,EMP0007,Active,Kolkata
+EMP0050,Divya,Das,divya.das@hrms.in,+91 8750213534,Sales,Key Account Executive,Full-Time,2015-04-22,1986-11-19,Female,869200,EMP0008,Active,Pune
+EMP0051,Rahul,Menon,rahul.menon@hrms.in,+91 7693569598,Product,Product Analyst,Part-Time,2019-04-02,1991-03-30,Female,2068200,EMP0005,Active,Kolkata
+EMP0052,Aditi,Tiwari,aditi.tiwari@hrms.in,+91 8767516826,Product,Associate PM,Full-Time,2023-10-05,1999-08-15,Male,430100,EMP0004,Active,Bengaluru
+EMP0053,Zara,Patel,zara.patel@hrms.in,+91 7781626544,Legal,Legal Counsel,Full-Time,2017-06-11,1995-06-07,Female,1847300,EMP0003,Active,Chennai
+EMP0054,Lavanya,Bose,lavanya.bose@hrms.in,+91 7536650768,Human Resources,HRBP,Full-Time,2018-07-01,1997-11-30,Female,1874200,EMP0007,On Leave,Hyderabad
+EMP0055,Bhavna,Mehta,bhavna.mehta@hrms.in,+91 9263092213,Marketing,Marketing Executive,Full-Time,2018-05-20,2000-05-07,Female,807700,EMP0010,Active,Delhi
+EMP0056,Tanvi,Bhat,tanvi.bhat@hrms.in,+91 9167658571,Human Resources,HRBP,Full-Time,2015-02-21,1994-06-04,Female,742700,EMP0007,On Leave,Kolkata
+EMP0057,Hema,Patel,hema.patel@hrms.in,+91 8427033086,Data & Analytics,ML Engineer,Full-Time,2025-04-24,1997-01-26,Female,2249800,EMP0007,Active,Kochi
+EMP0058,Lakshmi,Menon,lakshmi.menon@hrms.in,+91 9790842177,Human Resources,Talent Acquisition Specialist,Contract,2017-09-25,2001-10-31,Male,2859900,EMP0007,Active,Kolkata
+EMP0059,Nandini,Gupta,nandini.gupta@hrms.in,+91 8597637802,Product,Product Analyst,Full-Time,2024-11-14,1998-05-16,Female,1458800,EMP0009,Active,Hyderabad
+EMP0060,Chetan,Pillai,chetan.pillai@hrms.in,+91 9359563271,Legal,CLO,Part-Time,2022-09-29,1995-09-06,Female,2358700,EMP0008,Active,Chennai
+EMP0061,Manoj,Pillai,manoj.pillai@hrms.in,+91 8325141890,Operations,COO,Full-Time,2021-03-17,1996-11-28,Male,3428700,EMP0009,Active,Kolkata
+EMP0062,Lakshmi,Iyer,lakshmi.iyer@hrms.in,+91 7823740217,Human Resources,HR Manager,Full-Time,2023-05-01,1997-01-07,Female,3194800,EMP0003,Active,Kolkata
+EMP0063,Lakshmi,Tiwari,lakshmi.tiwari@hrms.in,+91 8931978765,Customer Success,Onboarding Specialist,Intern,2024-05-03,1989-05-10,Male,1813600,EMP0003,Active,Ahmedabad
+EMP0064,Divya,Reddy,divya.reddy@hrms.in,+91 7149117146,Data & Analytics,ML Engineer,Full-Time,2016-06-01,1999-04-23,Female,2358900,EMP0002,Active,Kochi
+EMP0065,Manoj,Malhotra,manoj.malhotra@hrms.in,+91 8568667733,Product,Associate PM,Intern,2017-10-31,1995-09-19,Male,574100,EMP0007,Active,Kochi
+EMP0066,Arun,Pandey,arun.pandey@hrms.in,+91 7175629887,Finance,CFO,Contract,2015-12-15,1990-07-27,Male,2045600,EMP0010,Active,Kochi
+EMP0067,Jatin,Agarwal,jatin.agarwal@hrms.in,+91 8712359856,Legal,Legal Associate,Full-Time,2021-08-07,1994-08-14,Male,2904800,EMP0001,Active,Chennai
+EMP0068,Karthik,Nair,karthik.nair@hrms.in,+91 9049637659,Operations,Operations Analyst,Full-Time,2016-12-12,1997-05-19,Male,311200,EMP0007,Active,Kochi
+EMP0069,Shreya,Iyer,shreya.iyer@hrms.in,+91 7106940340,Operations,Supply Chain Executive,Part-Time,2020-02-03,1986-08-07,Female,1409600,EMP0010,Active,Hyderabad
+EMP0070,Rohit,Singh,rohit.singh@hrms.in,+91 8784439466,Finance,Finance Manager,Contract,2015-10-20,1986-05-04,Male,1590200,EMP0010,Active,Kochi
+EMP0071,Manoj,Chopra,manoj.chopra@hrms.in,+91 7407471433,Operations,Process Improvement Lead,Contract,2020-08-11,1997-02-10,Female,637400,EMP0010,Active,Coimbatore
+EMP0072,Jai,Menon,jai.menon@hrms.in,+91 8978242816,Engineering,Software Engineer,Full-Time,2022-07-24,1997-11-26,Female,387000,EMP0005,Active,Mumbai
+EMP0073,Shreya,Kaur,shreya.kaur@hrms.in,+91 9134867963,Operations,Operations Manager,Intern,2019-11-21,1999-03-29,Female,682700,EMP0008,Active,Delhi
+EMP0074,Nandini,Pandey,nandini.pandey@hrms.in,+91 7342731079,Product,UX Researcher,Full-Time,2018-03-26,1999-11-11,Female,3489800,EMP0009,Active,Chennai
+EMP0075,Nandini,Reddy,nandini.reddy@hrms.in,+91 8059325194,Sales,Key Account Executive,Contract,2015-01-05,1999-10-02,Female,2237700,EMP0007,Active,Ahmedabad

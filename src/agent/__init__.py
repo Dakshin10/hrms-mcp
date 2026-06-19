@@ -1,0 +1,1 @@
+"""Minori HRMS Agent package."""

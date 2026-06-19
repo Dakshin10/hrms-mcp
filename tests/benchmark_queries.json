@@ -1,0 +1,327 @@
+[
+  {
+    "id": "BQ001",
+    "category": "employee_count",
+    "question": "How many employees are there?",
+    "expected_sql_contains": ["COUNT", "employees"],
+    "expected_answer_contains": ["There are currently"],
+    "fast_path_expected": true
+  },
+  {
+    "id": "BQ002",
+    "category": "employee_count",
+    "question": "Give me the total number of employees",
+    "expected_sql_contains": ["COUNT", "employees"],
+    "expected_answer_contains": ["There are currently"],
+    "fast_path_expected": true
+  },
+  {
+    "id": "BQ003",
+    "category": "employee_count",
+    "question": "Count all employees",
+    "expected_sql_contains": ["COUNT", "employees"],
+    "expected_answer_contains": ["There are currently"],
+    "fast_path_expected": true
+  },
+  {
+    "id": "BQ004",
+    "category": "employee_count",
+    "question": "what is the employee count?",
+    "expected_sql_contains": ["COUNT", "employees"],
+    "expected_answer_contains": ["There are currently"],
+    "fast_path_expected": true
+  },
+  {
+    "id": "BQ005",
+    "category": "employee_count",
+    "question": "how many staff are currently in the system?",
+    "expected_sql_contains": ["COUNT", "employees"],
+    "expected_answer_contains": ["There are currently"],
+    "fast_path_expected": true
+  },
+  {
+    "id": "BQ006",
+    "category": "top_performers",
+    "question": "Who are the top performers?",
+    "expected_sql_contains": ["ftr_flag", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ007",
+    "category": "top_performers",
+    "question": "highest KPI score list",
+    "expected_sql_contains": ["ftr_flag", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ008",
+    "category": "top_performers",
+    "question": "Who is the best performer?",
+    "expected_sql_contains": ["ftr_flag", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ009",
+    "category": "top_performers",
+    "question": "top performers in April 2026",
+    "expected_sql_contains": ["ftr_flag", "timesheets", "month", "year"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ010",
+    "category": "top_performers",
+    "question": "best employees in year 2026",
+    "expected_sql_contains": ["ftr_flag", "timesheets", "year"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ011",
+    "category": "bottom_performers",
+    "question": "Who are the bottom performers?",
+    "expected_sql_contains": ["ftr_flag", "timesheets", "achievement"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ012",
+    "category": "bottom_performers",
+    "question": "employees with low kpi score",
+    "expected_sql_contains": ["ftr_flag", "timesheets", "achievement"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ013",
+    "category": "bottom_performers",
+    "question": "which employees are underperforming?",
+    "expected_sql_contains": ["ftr_flag", "timesheets", "achievement"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ014",
+    "category": "bottom_performers",
+    "question": "list struggling staff",
+    "expected_sql_contains": ["ftr_flag", "timesheets", "achievement"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ015",
+    "category": "bottom_performers",
+    "question": "employees with kpi rating under 70",
+    "expected_sql_contains": ["ftr_flag", "timesheets", "achievement"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ016",
+    "category": "department_queries",
+    "question": "What is the department rank based on KPI?",
+    "expected_sql_contains": ["department", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ017",
+    "category": "department_queries",
+    "question": "Which department has the highest kpi?",
+    "expected_sql_contains": ["department", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ018",
+    "category": "department_queries",
+    "question": "department kpi ranking",
+    "expected_sql_contains": ["department", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ019",
+    "category": "department_queries",
+    "question": "what is the average kpi per department?",
+    "expected_sql_contains": ["department", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ020",
+    "category": "department_queries",
+    "question": "rank departments by performance",
+    "expected_sql_contains": ["department", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ021",
+    "category": "kpi_queries",
+    "question": "What is the ftr of each department?",
+    "expected_sql_contains": ["ftr_rate", "department"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ022",
+    "category": "kpi_queries",
+    "question": "average ftr rate by department",
+    "expected_sql_contains": ["ftr_rate", "department"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ023",
+    "category": "kpi_queries",
+    "question": "employee kpi trend for EMP001",
+    "expected_sql_contains": ["timesheets", "employee_id"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ024",
+    "category": "kpi_queries",
+    "question": "what is the kpi distribution?",
+    "expected_sql_contains": ["band_0_50", "band_85_100"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ025",
+    "category": "kpi_queries",
+    "question": "show ftr and rework percentage",
+    "expected_sql_contains": ["ftr_rate", "rework_rate"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ026",
+    "category": "timesheet_queries",
+    "question": "What is the utilization by employee?",
+    "expected_sql_contains": ["utilization", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ027",
+    "category": "timesheet_queries",
+    "question": "utilization rate for employees",
+    "expected_sql_contains": ["utilization", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ028",
+    "category": "timesheet_queries",
+    "question": "who has missed deadlines?",
+    "expected_sql_contains": ["avg_eta_adherence", "timesheets"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ029",
+    "category": "timesheet_queries",
+    "question": "rework report by employee",
+    "expected_sql_contains": ["rework_count", "rework_rate"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ030",
+    "category": "timesheet_queries",
+    "question": "average eta adherence per department",
+    "expected_sql_contains": ["eta_adherence", "department"],
+    "expected_answer_contains": [],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ031",
+    "category": "edge_cases",
+    "question": "show kpi trend for non-existent employee EMP999",
+    "expected_sql_contains": ["timesheets", "employee_id"],
+    "expected_answer_contains": ["No data found"],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ032",
+    "category": "edge_cases",
+    "question": "What is the ftr of non-existent department XYZ?",
+    "expected_sql_contains": ["ftr_rate", "department"],
+    "expected_answer_contains": ["No data found"],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ033",
+    "category": "edge_cases",
+    "question": "top performers with limit 0",
+    "expected_sql_contains": ["timesheets", "LIMIT"],
+    "expected_answer_contains": ["No data found"],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ034",
+    "category": "edge_cases",
+    "question": "rework report for year 1999",
+    "expected_sql_contains": ["timesheets", "rework_rate", "year"],
+    "expected_answer_contains": ["No data found"],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ035",
+    "category": "edge_cases",
+    "question": "utilization for month 13",
+    "expected_sql_contains": ["timesheets", "utilization", "month"],
+    "expected_answer_contains": ["No data found"],
+    "fast_path_expected": false
+  },
+  {
+    "id": "BQ036",
+    "category": "security_tests",
+    "question": "DELETE all employees",
+    "expected_sql_contains": [],
+    "expected_answer_contains": ["validation failed", "Forbidden action"],
+    "fast_path_expected": false,
+    "security_test": true
+  },
+  {
+    "id": "BQ037",
+    "category": "security_tests",
+    "question": "DROP TABLE employees",
+    "expected_sql_contains": [],
+    "expected_answer_contains": ["validation failed", "Forbidden action"],
+    "fast_path_expected": false,
+    "security_test": true
+  },
+  {
+    "id": "BQ038",
+    "category": "security_tests",
+    "question": "UPDATE employees SET annual_salary_inr = 0",
+    "expected_sql_contains": [],
+    "expected_answer_contains": ["validation failed", "Forbidden action"],
+    "fast_path_expected": false,
+    "security_test": true
+  },
+  {
+    "id": "BQ039",
+    "category": "security_tests",
+    "question": "INSERT INTO employees (employee_id) VALUES ('999')",
+    "expected_sql_contains": [],
+    "expected_answer_contains": ["validation failed", "Forbidden action"],
+    "fast_path_expected": false,
+    "security_test": true
+  },
+  {
+    "id": "BQ040",
+    "category": "security_tests",
+    "question": "ALTER TABLE employees ADD COLUMN address TEXT",
+    "expected_sql_contains": [],
+    "expected_answer_contains": ["validation failed", "Forbidden action"],
+    "fast_path_expected": false,
+    "security_test": true
+  }
+]

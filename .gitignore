@@ -1,0 +1,91 @@
+# ─── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.pyo
+
+# ─── Virtual Environment ─────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# ─── Environment & Secrets ───────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ─── Distribution / Build ────────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+MANIFEST
+
+# ─── Testing & Coverage ──────────────────────────────────────────────────────
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+*.xml
+
+# ─── Benchmark Results (generated, not source-controlled) ────────────────────
+tests/benchmark_results/*.json
+!tests/benchmark_results/.gitkeep
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ─── Cloudflare / Wrangler ───────────────────────────────────────────────────
+.wrangler/
+.dev.vars
+worker-configuration.d.ts
+wrangler.toml.bak
+
+# ─── Local D1 / SQLite databases ─────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ─── Data / Uploads ──────────────────────────────────────────────────────────
+data/uploads/
+data/tmp/
+*.csv
+*.xlsx
+*.xls
+!data/seed/**
+
+# ─── IDEs & Editors ──────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ─── Node (Wrangler CLI dependencies) ────────────────────────────────────────
+node_modules/
+package-lock.json
+yarn.lock
+
+# ─── Type stubs & mypy ───────────────────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.pyi
+
+# ─── Jupyter ─────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ─── OS ──────────────────────────────────────────────────────────────────────
+.DS_Store
+ehthumbs.db
+desktop.ini
