@@ -1,3 +1,9 @@
+import sys
+from pathlib import Path
+
+# Add project root to python path to resolve absolute imports when run directly
+sys.path.append(str(Path(__file__).parent.parent.parent.resolve()))
+
 from mcp.server.fastmcp import FastMCP
 from src.core.logging.logger import logger
 from src.core.exceptions.errors import SQLValidationError

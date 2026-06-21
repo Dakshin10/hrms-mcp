@@ -89,3 +89,6 @@ dmypy.json
 .DS_Store
 ehthumbs.db
 desktop.ini
+
+# ─── Confidential-data ───────────────────────────────────────────────────────
+confidential-data/
