@@ -42,6 +42,41 @@ class TestQueryCache(unittest.TestCase):
         self.assertEqual(self.cache.stats()["cached_queries"], 0)
         self.assertIsNone(self.cache.get("q1"))
 
+    def test_cache_metrics(self):
+        # Initial stats
+        stats = self.cache.stats()
+        self.assertEqual(stats["total_queries"], 0)
+        self.assertEqual(stats["hits"], 0)
+        self.assertEqual(stats["misses"], 0)
+        self.assertEqual(stats["hit_rate"], 0.0)
+
+        # 1. Miss
+        self.assertIsNone(self.cache.get("q1"))
+        stats = self.cache.stats()
+        self.assertEqual(stats["total_queries"], 1)
+        self.assertEqual(stats["hits"], 0)
+        self.assertEqual(stats["misses"], 1)
+        self.assertEqual(stats["hit_rate"], 0.0)
+
+        # 2. Set and Hit
+        result = {"val": "test"}
+        self.cache.set("q1", result)
+        self.assertEqual(self.cache.get("q1"), result)
+        stats = self.cache.stats()
+        self.assertEqual(stats["total_queries"], 2)
+        self.assertEqual(stats["hits"], 1)
+        self.assertEqual(stats["misses"], 1)
+        self.assertEqual(stats["hit_rate"], 50.0)
+
+        # 3. Expiry is a miss
+        time.sleep(1.1)
+        self.assertIsNone(self.cache.get("q1"))
+        stats = self.cache.stats()
+        self.assertEqual(stats["total_queries"], 3)
+        self.assertEqual(stats["hits"], 1)
+        self.assertEqual(stats["misses"], 2)
+        self.assertAlmostEqual(stats["hit_rate"], 33.3333333, places=2)
+
 
 if __name__ == "__main__":
     unittest.main()

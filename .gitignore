@@ -17,6 +17,8 @@ ENV/
 .env.local
 .env.*.local
 !.env.example
+token.json
+client_secret.json
 
 # ─── Distribution / Build ────────────────────────────────────────────────────
 dist/
@@ -64,6 +66,9 @@ data/tmp/
 # ─── IDEs & Editors ──────────────────────────────────────────────────────────
 .idea/
 .vscode/
+.gemini/
+.copilot/
+.history/
 *.swp
 *.swo
 *~
@@ -92,3 +97,5 @@ desktop.ini
 
 # ─── Confidential-data ───────────────────────────────────────────────────────
 confidential-data/
+client_secret.json
+token.json

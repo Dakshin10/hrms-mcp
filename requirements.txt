@@ -42,3 +42,7 @@ langchain-groq
 langchain-mcp-adapters
 langgraph
 openpyxl==3.1.5
+gspread>=6.0.0
+google-auth>=2.28.0
+google-auth-oauthlib>=1.2.0
+google-auth-httplib2>=0.2.0
