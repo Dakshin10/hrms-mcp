@@ -1,61 +1,11 @@
-from langchain_groq import ChatGroq
-from langchain_mcp_adapters.client import MultiServerMCPClient
-from langgraph.prebuilt import create_react_agent
-from langchain_core.messages import HumanMessage, SystemMessage
-from src.core.config.settings import settings
+import asyncio
+from datetime import datetime
 from src.core.logging.logger import logger
-
-SYSTEM_PROMPT = """
-You are an intelligent HR Analytics Assistant for Minori HRMS.
-You have access to tools that query employee, KPI, timesheet, 
-FTR, ETA, and performance data.
-
-Guidelines:
-- For complex questions, break them into multiple tool calls
-- Always use hr_insights() for performance/KPI questions
-- Use ask_database() for specific SQL-level questions
-- Combine results across tool calls to give a complete answer
-- Be concise and business-focused in your final answer
-- Never expose raw SQL or JSON to the user
-- If data is unavailable, say so clearly
-
-You understand these HR terms:
-- FTR (First Time Right): task quality metric, higher is better
-- ETA adherence: how well employees meet time estimates
-- Achievement %: overall KPI score per employee
-- Rework: tasks returned for correction, lower is better
-"""
+from src.agent.graph import agent_workflow
 
 class HRAgent:
     def __init__(self):
-        self.model = ChatGroq(
-            model=settings.groq_model or "llama-3.3-70b-versatile",
-            api_key=settings.groq_api_key,
-            temperature=0
-        )
-        self.mcp_config = {
-            "hrms": {
-                "command": "venv/Scripts/python",   
-                # Windows: venv/Scripts/python
-                # Linux/Mac: venv/bin/python
-                "args": ["-m", "src.mcp_server.server"],
-                "transport": "stdio"
-            }
-        }
-        self._agent = None
-
-    async def _get_agent(self):
-        """Lazy-initialize agent with live MCP tools."""
-        if self._agent is None:
-            async with MultiServerMCPClient(self.mcp_config) as client:
-                tools = await client.get_tools()
-                logger.info(f"Loaded {len(tools)} MCP tools into agent")
-                self._agent = create_react_agent(
-                    self.model,
-                    tools,
-                    state_modifier=SYSTEM_PROMPT
-                )
-        return self._agent
+        pass
 
     async def ask(
         self, 
@@ -63,73 +13,151 @@ class HRAgent:
         history: list[dict] | None = None
     ) -> dict:
         """
-        Run the agent with optional conversation history.
+        Run the LangGraph workflow agent with conversation history.
         
         Args:
             question: User's natural language question
-            history: List of {"role": "user"/"assistant", 
-                              "content": str} dicts
+            history: List of {"role": "user"/"assistant", "content": str} dicts
         
         Returns:
             {
               "answer": str,
-              "steps": int,       # number of tool calls made
-              "tools_used": list  # which tools were called
+              "steps": list[dict],    # Full timeline step log
+              "tools_used": list,     # Unique tools called
+              "steps_count": int      # Number of tool execution cycles
             }
         """
-        messages = []
+        import time
+        from src.core.config.settings import settings
+        from src.services.router.query_router import route_query
         
-        # Inject conversation history
+        if not settings.enable_langgraph:
+            logger.info("[Agent] LangGraph is disabled. Routing via QueryRouter.")
+            return await route_query(question)
+
+        from src.agent.fast_path import fast_path_router
+        
+        start_total = time.perf_counter()
+        
+        # Measure Router latency
+        start_router = time.perf_counter()
+        fast_path_result = await fast_path_router(question)
+        router_dur = time.perf_counter() - start_router
+        
+        if fast_path_result is not None:
+            total_dur = time.perf_counter() - start_total
+            t = fast_path_result.get("timings", {})
+            t["router"] = router_dur
+            t["total"] = total_dur
+            
+            logger.info("=" * 60)
+            logger.info("PERFORMANCE METRICS SUMMARY (FAST PATH ROUTED)")
+            logger.info(f"  Router Time:         {t.get('router', 0.0)*1000:.2f} ms")
+            logger.info(f"  Tool Execution Time: {t.get('tool', 0.0)*1000:.2f} ms")
+            logger.info(f"  Database Time:       {t.get('database', 0.0)*1000:.2f} ms")
+            logger.info(f"  Total Request Time:  {t.get('total', 0.0)*1000:.2f} ms")
+            logger.info("=" * 60)
+            
+            # Remove temporary timings key before returning
+            fast_path_result.pop("timings", None)
+            fast_path_result["steps_count"] = len(fast_path_result.get("tools_used", []))
+            return fast_path_result
+            
+        # Build initial history
+        agent_history = []
         if history:
             for msg in history:
-                if msg["role"] == "user":
-                    messages.append(HumanMessage(content=msg["content"]))
-                else:
-                    messages.append(
-                        SystemMessage(content=msg["content"])
-                    )
+                agent_history.append({
+                    "role": msg.get("role", "user"),
+                    "content": msg.get("content", "")
+                })
         
-        messages.append(HumanMessage(content=question))
+        # Add current user query to history
+        agent_history.append({
+            "role": "user",
+            "content": question
+        })
+
+        initial_state = {
+            "user_query": question,
+            "available_tools": [],
+            "selected_tool": None,
+            "tool_input": None,
+            "tool_result": None,
+            "final_response": None,
+            "steps": [],
+            "history": agent_history,
+            "timings": {
+                "router": router_dur,
+                "langgraph": 0.0,
+                "groq": 0.0,
+                "tool": 0.0,
+                "database": 0.0
+            }
+        }
 
         try:
-            async with MultiServerMCPClient(self.mcp_config) as client:
-                tools = await client.get_tools()
-                agent = create_react_agent(
-                    self.model,
-                    tools,
-                    state_modifier=SYSTEM_PROMPT
-                )
-                
-                result = await agent.ainvoke({"messages": messages})
-                
-                # Extract final answer
-                final_message = result["messages"][-1]
-                answer = final_message.content
-                
-                # Count tool calls made
-                tool_calls = [
-                    m for m in result["messages"]
-                    if hasattr(m, "name") and m.name is not None
-                ]
-                tools_used = list({m.name for m in tool_calls})
-                
-                logger.info({
-                    "event": "agent_response",
-                    "question": question,
-                    "steps": len(tool_calls),
-                    "tools_used": tools_used
-                })
-                
-                return {
-                    "answer": answer,
-                    "steps": len(tool_calls),
-                    "tools_used": tools_used
-                }
+            logger.info(f"Running LangGraph agent for query: '{question}'")
+            start_graph = time.perf_counter()
+            final_state = await agent_workflow.ainvoke(
+                initial_state,
+                config={"recursion_limit": 25}
+            )
+            graph_dur = time.perf_counter() - start_graph
+            
+            answer = final_state.get("final_response") or "I executed the flow but failed to formulate a response."
+            steps = final_state.get("steps") or []
+            
+            # Find unique tools executed
+            history_entries = final_state.get("history", [])
+            tools_used = list({entry["toolName"] for entry in history_entries if entry.get("role") == "tool" and entry.get("toolName")})
+            
+            total_dur = time.perf_counter() - start_total
+            t = final_state.get("timings", {})
+            t["langgraph"] = graph_dur
+            t["total"] = total_dur
+            
+            logger.info("=" * 60)
+            logger.info("PERFORMANCE METRICS SUMMARY (LANGGRAPH ROUTED)")
+            logger.info(f"  Router Time:         {t.get('router', 0.0)*1000:.2f} ms")
+            logger.info(f"  LangGraph Time:      {t.get('langgraph', 0.0)*1000:.2f} ms")
+            logger.info(f"  Groq Time:           {t.get('groq', 0.0)*1000:.2f} ms")
+            logger.info(f"  Tool Execution Time: {t.get('tool', 0.0)*1000:.2f} ms")
+            logger.info(f"  Database Time:       {t.get('database', 0.0)*1000:.2f} ms")
+            logger.info(f"  Total Request Time:  {t.get('total', 0.0)*1000:.2f} ms")
+            logger.info("=" * 60)
+            
+            logger.info({
+                "event": "agent_execution_complete",
+                "tools_used": tools_used,
+                "steps_log_count": len(steps)
+            })
+            
+            return {
+                "answer": answer,
+                "steps": steps,
+                "tools_used": tools_used,
+                "steps_count": len(tools_used)
+            }
 
         except Exception as e:
-            logger.error(f"Agent error: {e}")
+            logger.error(f"LangGraph execution exception: {e}", exc_info=True)
+            err_msg = str(e)
+            if "rate limited" in err_msg.lower():
+                answer = "Agent currently rate limited. Please retry in 30 seconds."
+            else:
+                answer = f"I encountered an error processing your request: {str(e)}. Please try rephrasing."
+                
+            from datetime import datetime
             return {
-                "answer": "I encountered an error processing your request. Please try rephrasing.",
-                "steps": 0,
-                "tools_used": []
+                "answer": answer,
+                "steps": [
+                    {
+                        "node": "Error Handler",
+                        "message": f"Execution failed: {str(e)}",
+                        "timestamp": datetime.now().isoformat()
+                    }
+                ],
+                "tools_used": [],
+                "steps_count": 0
             }

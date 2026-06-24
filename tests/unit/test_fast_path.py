@@ -38,5 +38,30 @@ class TestFastPath(unittest.TestCase):
         asyncio.run(self.async_test_no_match_returns_none())
 
 
+from src.agent.fast_path import fast_path_router
+
+class TestNewFastPath(unittest.TestCase):
+    @patch("src.agent.fast_path.list_tables", new_callable=AsyncMock)
+    def test_new_fast_path_list_tables(self, mock_list):
+        mock_list.return_value = ["employees", "timesheets"]
+        import asyncio
+        res = asyncio.run(fast_path_router("show all tables"))
+        self.assertIsNotNone(res)
+        self.assertIn("Database Tables", res["answer"])
+        self.assertEqual(res["tools_used"], ["list_tables"])
+
+    @patch("src.agent.fast_path.list_tables", new_callable=AsyncMock)
+    @patch("src.agent.fast_path.execute_sql", new_callable=AsyncMock)
+    def test_new_fast_path_smart_sql(self, mock_exec, mock_list):
+        mock_list.return_value = ["employee_kpis"]
+        mock_exec.return_value = [{"id": 1, "score": 90}]
+        import asyncio
+        res = asyncio.run(fast_path_router("display all data from employee_kpis"))
+        self.assertIsNotNone(res)
+        self.assertIn("Query Result", res["answer"])
+        self.assertEqual(res["tools_used"], ["execute_sql"])
+        mock_exec.assert_called_once_with("SELECT * FROM employee_kpis LIMIT 100;")
+
+
 if __name__ == "__main__":
     unittest.main()

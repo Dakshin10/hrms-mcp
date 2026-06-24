@@ -2,7 +2,7 @@ import json
 import time
 import asyncio
 import os
-from src.services.text_to_sql import ask
+from src.services.ai.text_to_sql import ask
 from src.services.ai import query_cache
 from src.core.logging.logger import logger
 

@@ -1,5 +1,5 @@
 from src.core.logging.logger import logger
-from src.services.query.query_service import query_service as default_query_service
+from src.services.database.query_service import query_service as default_query_service
 
 
 class TimesheetAnalytics:

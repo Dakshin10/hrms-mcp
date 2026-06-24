@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pandas as pd
 import tempfile
 import os
-from src.services.sync.timesheet_loader import TimesheetLoader
+from src.services.database.sync.timesheet_loader import TimesheetLoader
 
 
 class TestTimesheetLoader(unittest.TestCase):

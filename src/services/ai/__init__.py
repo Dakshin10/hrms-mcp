@@ -1,4 +1,4 @@
-from src.services.metadata.metadata_service import metadata_service
+from src.services.database.metadata_service import metadata_service
 from src.services.ai.table_selector import TableSelector
 from src.services.ai.schema_builder import SchemaBuilder
 from src.services.ai.prompt_builder import PromptBuilder

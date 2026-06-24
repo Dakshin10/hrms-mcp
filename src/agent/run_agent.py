@@ -1,6 +1,6 @@
 import asyncio
 from src.agent.hr_agent import HRAgent
-from src.agent.conversation_memory import memory_store
+from src.agent.memory import memory_store
 
 async def main():
     agent = HRAgent()

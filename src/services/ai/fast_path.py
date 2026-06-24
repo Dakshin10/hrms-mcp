@@ -1,5 +1,5 @@
-from src.services.metadata.metadata_service import metadata_service
-from src.services.query.query_service import query_service
+from src.services.database.metadata_service import metadata_service
+from src.services.database.query_service import query_service
 from src.core.logging.logger import logger
 
 FAST_PATH_RULES = [

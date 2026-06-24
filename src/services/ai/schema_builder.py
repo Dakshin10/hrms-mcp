@@ -1,7 +1,7 @@
 import time
 from src.core.config.settings import settings
 from src.core.logging.logger import logger
-from src.services.metadata.metadata_service import MetadataService
+from src.services.database.metadata_service import MetadataService
 
 
 class SchemaBuilder:

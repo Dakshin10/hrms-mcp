@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import AsyncMock, patch, MagicMock
-from src.mcp_server.tools.hr.hr_insights_handler import HRInsightsHandler
+from src.tools.hr.hr_insights_handler import HRInsightsHandler
 
 
 class TestHRInsightsHandler(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestHRInsightsHandler(unittest.TestCase):
         self.handler.timesheet = MagicMock()
         self.handler.employee = MagicMock()
 
-    @patch("src.mcp_server.tools.hr.hr_insights_handler.generate_answer", new_callable=AsyncMock)
+    @patch("src.tools.hr.hr_insights_handler.generate_answer", new_callable=AsyncMock)
     async def async_test_route_top_performers(self, mock_gen_answer):
         self.handler.kpi.top_performers = AsyncMock(return_value=[{"name": "Alice"}])
         mock_gen_answer.return_value = "Top performers summary"
@@ -27,7 +27,7 @@ class TestHRInsightsHandler(unittest.TestCase):
         import asyncio
         asyncio.run(self.async_test_route_top_performers())
 
-    @patch("src.mcp_server.tools.hr.hr_insights_handler.generate_answer", new_callable=AsyncMock)
+    @patch("src.tools.hr.hr_insights_handler.generate_answer", new_callable=AsyncMock)
     async def async_test_route_star_employees(self, mock_gen_answer):
         self.handler.kpi.top_performers = AsyncMock(return_value=[])
         mock_gen_answer.return_value = "No stars in April"

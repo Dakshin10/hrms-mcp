@@ -97,5 +97,30 @@ desktop.ini
 
 # ─── Confidential-data ───────────────────────────────────────────────────────
 confidential-data/
-client_secret.json
-token.json
+
+# Google Credentials
+credentials/
+*.json
+
+# Allow package manifests
+!package.json
+!package-lock.json
+
+# Environment Variables
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+logs/
+*.log
+
+# Build Artifacts
+dist/
+build/
+.next/
+coverage/

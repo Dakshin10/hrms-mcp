@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     groq_model: str = "llama-3.1-8b-instant"
     groq_max_tokens: int = 300
     groq_temperature: float = 0.0
+    enable_langgraph: bool = Field(default=False, validation_alias="ENABLE_LANGGRAPH")
 
     model_config = SettingsConfigDict(
         env_file=".env",

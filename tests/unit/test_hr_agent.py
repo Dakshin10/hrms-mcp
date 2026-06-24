@@ -2,59 +2,51 @@ import unittest
 from unittest.mock import AsyncMock, patch, MagicMock
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from src.agent.hr_agent import HRAgent
-from src.agent.conversation_memory import ConversationSession, memory_store
+from src.agent.memory import ConversationSession, memory_store
 
 
 class TestHRAgent(unittest.TestCase):
     def setUp(self):
+        from src.core.config.settings import settings
+        self._orig_enable = settings.enable_langgraph
+        settings.enable_langgraph = True
         memory_store._sessions.clear()
 
-    @patch("src.agent.hr_agent.ChatGroq")
-    @patch("src.agent.hr_agent.MultiServerMCPClient")
-    @patch("src.agent.hr_agent.create_react_agent")
-    def test_ask_single_tool_call(self, mock_create_agent, mock_client_cls, mock_chat_groq):
-        # Setup mocks
-        mock_client = AsyncMock()
-        mock_client.get_tools.return_value = ["mock_tool"]
-        mock_client_cls.return_value.__aenter__.return_value = mock_client
+    def tearDown(self):
+        from src.core.config.settings import settings
+        settings.enable_langgraph = self._orig_enable
 
-        # Mock the react agent run
-        mock_agent = AsyncMock()
-        mock_tool_msg = AIMessage(content="Tool output")
-        mock_tool_msg.name = "mock_tool"
-        
-        mock_final_msg = AIMessage(content="Final agent answer")
-        
-        mock_agent.ainvoke.return_value = {
-            "messages": [
-                HumanMessage(content="What is the employee count?"),
-                mock_tool_msg,
-                mock_final_msg
+    @patch("src.agent.hr_agent.agent_workflow.ainvoke")
+    def test_ask_single_tool_call(self, mock_ainvoke):
+        # Setup mock return state
+        mock_ainvoke.return_value = {
+            "final_response": "Final agent answer",
+            "steps": [
+                {"node": "Discovery Node", "message": "Discovered tools", "timestamp": "2026-06-23T20:00:00Z"},
+                {"node": "Tool Execution Node", "message": "Invoking tool 'list_tables'", "timestamp": "2026-06-23T20:00:01Z"}
+            ],
+            "history": [
+                {"role": "user", "content": "What is the employee count?"},
+                {"role": "tool", "content": "Tool output", "toolName": "list_tables", "toolInput": {}},
+                {"role": "assistant", "content": "Final agent answer"}
             ]
         }
-        mock_create_agent.return_value = mock_agent
 
         agent = HRAgent()
         import asyncio
         result = asyncio.run(agent.ask("What is the employee count?"))
 
         self.assertEqual(result["answer"], "Final agent answer")
-        self.assertEqual(result["steps"], 1)
-        self.assertEqual(result["tools_used"], ["mock_tool"])
+        self.assertEqual(result["steps_count"], 1)
+        self.assertEqual(result["tools_used"], ["list_tables"])
 
-    @patch("src.agent.hr_agent.ChatGroq")
-    @patch("src.agent.hr_agent.MultiServerMCPClient")
-    @patch("src.agent.hr_agent.create_react_agent")
-    def test_history_passed_correctly(self, mock_create_agent, mock_client_cls, mock_chat_groq):
-        mock_client = AsyncMock()
-        mock_client.get_tools.return_value = []
-        mock_client_cls.return_value.__aenter__.return_value = mock_client
-
-        mock_agent = AsyncMock()
-        mock_agent.ainvoke.return_value = {
-            "messages": [AIMessage(content="Hello again")]
+    @patch("src.agent.hr_agent.agent_workflow.ainvoke")
+    def test_history_passed_correctly(self, mock_ainvoke):
+        mock_ainvoke.return_value = {
+            "final_response": "Hello again",
+            "steps": [],
+            "history": []
         }
-        mock_create_agent.return_value = mock_agent
 
         agent = HRAgent()
         history = [
@@ -66,26 +58,22 @@ class TestHRAgent(unittest.TestCase):
         asyncio.run(agent.ask("how are you?", history=history))
 
         # Inspect what messages were passed to ainvoke
-        called_args = mock_agent.ainvoke.call_args[0][0]
-        self.assertEqual(len(called_args["messages"]), 3)
-        self.assertIsInstance(called_args["messages"][0], HumanMessage)
-        self.assertEqual(called_args["messages"][0].content, "hello")
-        self.assertIsInstance(called_args["messages"][1], SystemMessage)
-        self.assertEqual(called_args["messages"][1].content, "hi")
-        self.assertIsInstance(called_args["messages"][2], HumanMessage)
-        self.assertEqual(called_args["messages"][2].content, "how are you?")
+        called_args = mock_ainvoke.call_args[0][0]
+        self.assertEqual(len(called_args["history"]), 3)
+        self.assertEqual(called_args["history"][0]["content"], "hello")
+        self.assertEqual(called_args["history"][1]["content"], "hi")
+        self.assertEqual(called_args["history"][2]["content"], "how are you?")
 
-    @patch("src.agent.hr_agent.ChatGroq")
-    @patch("src.agent.hr_agent.MultiServerMCPClient")
-    def test_agent_error_graceful_fallback(self, mock_client_cls, mock_chat_groq):
-        mock_client_cls.return_value.__aenter__.side_effect = Exception("MCP Connection failed")
+    @patch("src.agent.hr_agent.agent_workflow.ainvoke")
+    def test_agent_error_graceful_fallback(self, mock_ainvoke):
+        mock_ainvoke.side_effect = Exception("LangGraph execution crashed")
 
         agent = HRAgent()
         import asyncio
         result = asyncio.run(agent.ask("Hello"))
 
         self.assertIn("error processing your request", result["answer"])
-        self.assertEqual(result["steps"], 0)
+        self.assertEqual(result["steps_count"], 0)
         self.assertEqual(result["tools_used"], [])
 
     def test_conversation_session_history_cap(self):
