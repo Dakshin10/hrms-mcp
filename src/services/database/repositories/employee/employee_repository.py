@@ -11,39 +11,19 @@ class EmployeeRepository(BaseRepository):
             """
             INSERT INTO employees (
                 employee_id,
-                first_name,
-                last_name,
-                email,
-                phone_number,
+                employee_name,
                 department,
-                job_title,
-                employment_type,
-                date_of_joining,
-                date_of_birth,
-                gender,
-                annual_salary_inr,
-                manager_id,
-                status,
-                location
+                designation,
+                salary
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?)
             """,
             [
                 employee["employee_id"],
-                employee["first_name"],
-                employee["last_name"],
-                employee["email"],
-                employee["phone_number"],
+                employee["employee_name"],
                 employee["department"],
-                employee["job_title"],
-                employee["employment_type"],
-                employee["date_of_joining"],
-                employee["date_of_birth"],
-                employee["gender"],
-                employee["annual_salary_inr"],
-                employee["manager_id"],
-                employee["status"],
-                employee["location"]
+                employee["designation"],
+                employee["salary"]
             ]
         )
 
@@ -92,8 +72,8 @@ class EmployeeRepository(BaseRepository):
             """
             SELECT *
             FROM employees
-            WHERE department = ?
-            ORDER BY first_name
+            WHERE LOWER(department) = LOWER(?)
+            ORDER BY employee_name
             """,
             [department]
         )
@@ -107,14 +87,13 @@ class EmployeeRepository(BaseRepository):
             SELECT *
             FROM employees
             WHERE
-                first_name LIKE ?
-                OR last_name LIKE ?
+                employee_name LIKE ?
                 OR department LIKE ?
-                OR job_title LIKE ?
+                OR designation LIKE ?
+            ORDER BY employee_name
             LIMIT 50
             """,
             [
-                f"%{keyword}%",
                 f"%{keyword}%",
                 f"%{keyword}%",
                 f"%{keyword}%"

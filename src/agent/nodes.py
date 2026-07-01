@@ -32,7 +32,7 @@ TOOL_REGISTRY = {
 
 def get_llm():
     return ChatGroq(
-        model=settings.groq_model or "llama-3.3-70b-versatile",
+        model=settings.groq_model or "openai/gpt-oss-120b",
         api_key=settings.groq_api_key,
         temperature=0.1
     )

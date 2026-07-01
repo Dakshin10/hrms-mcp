@@ -19,7 +19,7 @@ class MetadataService:
             
         result = await self.repo.get_tables()
         self._tables_cache = result.get("results", [])
-        self._tables_cache_expires = now + 3600.0  # 1 hour TTL
+        self._tables_cache_expires = now + 60.0  # 60-second TTL — ensures new imported tables are picked up quickly
         return self._tables_cache
 
     async def get_table_schema(

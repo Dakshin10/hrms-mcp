@@ -73,3 +73,33 @@ class SchemaBuilder:
         logger.info("Schema cache invalidated")
         self._cache = None
         self._cached_at = 0.0
+        # Also clear the metadata-service layer so both caches are reset together
+        try:
+            self.metadata_service.clear_cache()
+        except Exception:
+            pass
+
+
+def discover_relationships(schema: dict[str, list[dict]]) -> list[str]:
+    """
+    Examines the schema and automatically detects potential relationships
+    between tables based on shared column names.
+    """
+    relationships = []
+    tables = list(schema.keys())
+    for i in range(len(tables)):
+        for j in range(i + 1, len(tables)):
+            t1 = tables[i]
+            t2 = tables[j]
+            cols1 = {col.get("name", "").lower() for col in schema[t1] if col.get("name")}
+            cols2 = {col.get("name", "").lower() for col in schema[t2] if col.get("name")}
+            
+            # Find shared columns
+            shared = cols1 & cols2
+            for col in shared:
+                # If the column contains 'id' or '_id', or if it's a known join column
+                if "id" in col or col in ("code", "name", "email", "department"):
+                    relationships.append(
+                        f"- `{t1}` can be joined with `{t2}` on `{t1}.{col} = {t2}.{col}`"
+                    )
+    return relationships

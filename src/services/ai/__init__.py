@@ -9,8 +9,8 @@ from src.services.ai.query_cache import QueryCache
 from src.services.ai.fast_path import FastPathHandler
 from src.services.ai.answer_generator import answer_generator
 
-table_selector = TableSelector()
 schema_builder = SchemaBuilder(metadata_service)
+table_selector = TableSelector(schema_builder)
 prompt_builder = PromptBuilder()
 llm_service = LLMService()
 sql_validator = SQLValidator()

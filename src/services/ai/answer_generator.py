@@ -18,7 +18,7 @@ class AnswerGenerator:
         question: str,
         sql: str,
         results: list[dict],
-        model: str = "llama-3.3-70b-versatile"
+        model: str = "openai/gpt-oss-120b"
     ) -> str:
         """
         Converts SQL query results into a human-readable business sentence or paragraph.
@@ -238,7 +238,7 @@ async def generate_answer(
     question: str,
     sql: str,
     results: list[dict],
-    model: str = "llama-3.3-70b-versatile"
+    model: str = "openai/gpt-oss-120b"
 ) -> str:
     """
     Shortcut function wrapper for module-level answer_generator singleton.

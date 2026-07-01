@@ -128,33 +128,43 @@ class TestMCPServerTools(unittest.TestCase):
         mock_ask.return_value = {
             "answer": "There are 5 employees.",
             "generated_sql": "SELECT COUNT(*) FROM employees",
-            "results": [{"count": 5}]
+            "rows_returned": 1,
+            "execution_time_ms": 10.5,
+            "structured_data": [{"count": 5}]
         }
         with patch.dict(os.environ, {"DEBUG_MODE": "False"}):
             import asyncio
             res = asyncio.run(ask_database("How many employees?"))
-            self.assertEqual(res, "There are 5 employees.")
+            self.assertEqual(res["answer"], "There are 5 employees.")
+            self.assertEqual(res["generated_sql"], "SELECT COUNT(*) FROM employees")
+            self.assertEqual(res["rows_returned"], 1)
+            self.assertEqual(res["structured_data"], [{"count": 5}])
 
     @patch("src.tools.db_tools.ask")
     def test_ask_database_debug_enabled(self, mock_ask):
         mock_ask.return_value = {
             "answer": "There are 5 employees.",
             "generated_sql": "SELECT COUNT(*) FROM employees",
-            "results": [{"count": 5}]
+            "rows_returned": 1,
+            "execution_time_ms": 10.5,
+            "structured_data": [{"count": 5}]
         }
         with patch.dict(os.environ, {"DEBUG_MODE": "True"}):
             import asyncio
             res = asyncio.run(ask_database("How many employees?"))
-            self.assertIn("There are 5 employees.", res)
-            self.assertIn("--- Debug ---", res)
-            self.assertIn("SQL: SELECT COUNT(*) FROM employees", res)
+            self.assertEqual(res["answer"], "There are 5 employees.")
+            self.assertEqual(res["generated_sql"], "SELECT COUNT(*) FROM employees")
+            self.assertEqual(res["structured_data"], [{"count": 5}])
 
     @patch("src.tools.db_tools.ask")
     def test_ask_database_exception(self, mock_ask):
         mock_ask.side_effect = Exception("Ask error")
         import asyncio
         res = asyncio.run(ask_database("How many employees?"))
-        self.assertEqual(res, {"error": "Ask error", "tool": "ask_database"})
+        self.assertEqual(res["generated_sql"], None)
+        self.assertEqual(res["rows_returned"], 0)
+        self.assertEqual(res["structured_data"], [])
+        self.assertIn("Ask error", res["answer"])
 
     @patch("src.tools.hr_tools.memory_store")
     @patch("src.agent.hr_agent.HRAgent")

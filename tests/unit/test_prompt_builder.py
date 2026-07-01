@@ -10,15 +10,18 @@ class TestPromptBuilder(unittest.TestCase):
         sys_prompt = self.builder.get_system_prompt()
         self.assertIn("STRICT RULES:", sys_prompt)
         self.assertIn("SQLite-compatible", sys_prompt)
-        self.assertIn("utilization_percentage", sys_prompt)
-        self.assertIn("rework_tasks", sys_prompt)
+        # Verify schema-agnostic anti-hallucination rules
+        self.assertIn("NEVER hallucinate column names", sys_prompt)
+        self.assertIn("NEVER assume specific column names", sys_prompt)
+        # Verify JOIN/aggregation guidance is present
+        self.assertIn("Relationships", sys_prompt)
 
     def test_user_prompt_formatting(self):
         schema_str = "Table: employees\nColumns:\n  - employee_id (TEXT)"
         question = "List all employees"
-        
+
         user_prompt = self.builder.build_user_prompt(question, schema_str)
-        self.assertIn("## Available Schema (ONLY use these tables and columns):", user_prompt)
+        self.assertIn("## Available Schema (ONLY use these exact tables and columns", user_prompt)
         self.assertIn(schema_str, user_prompt)
         self.assertIn("## User Question:", user_prompt)
         self.assertIn(question, user_prompt)

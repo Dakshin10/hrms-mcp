@@ -48,6 +48,48 @@ def resolve_table_name(name: str) -> str | None:
     return TABLE_ALIAS_MAP.get(cleaned)
 
 
+# ---------------------------------------------------------------------------
+# Complexity detector
+# ---------------------------------------------------------------------------
+# Terms that signal the query spans multiple tables, needs aggregation,
+# or requires JOIN logic.  Any query matching these bypasses the greedy
+# "show / display" fast-path and is routed directly to ask_database.
+_COMPLEX_TERMS = frozenset([
+    "and the", "working on", "project", "projects", "hours",
+    "contributed", "most", "highest", "lowest", "least",
+    "vs", "versus", "compare", "across", "between",
+    "sum", "total hours", "average hours", "per department",
+    "group by", "aggregate", "join",
+])
+
+_MULTI_TABLE_INDICATORS = [
+    ("employee", "project"),     # employees ↔ projects
+    ("employee", "hours"),        # employees ↔ project hours
+    ("department", "project"),   # departments ↔ projects
+    ("department", "hours"),     # departments ↔ hours worked
+    ("employee", "timesheet"),
+    ("employee", "task"),
+]
+
+
+def _is_complex_query(q: str) -> bool:
+    """
+    Returns True when the natural-language query likely requires
+    a JOIN, GROUP BY, or multi-table scan — i.e. should NOT be
+    answered by a simple 'SELECT * FROM <table> LIMIT 100'.
+    """
+    # Check for explicit analytical / join vocabulary
+    if any(term in q for term in _COMPLEX_TERMS):
+        return True
+
+    # Check whether the query references tokens from two different tables
+    for pair in _MULTI_TABLE_INDICATORS:
+        if all(indicator in q for indicator in pair):
+            return True
+
+    return False
+
+
 async def route_query(question: str) -> dict | None:
     """
     Directly routes user query to MCP tools using regex patterns, template detection,
@@ -125,18 +167,29 @@ async def route_query(question: str) -> dict | None:
         tool_name = "load_timesheets"
 
     # 10. Smart SQL Fast Path Match
+    # IMPORTANT: Only fires for simple single-table display queries.
+    # Any query that looks complex (JOIN / aggregation / multi-table) is
+    # intentionally NOT matched here so it falls through to ask_database.
     elif any(q.startswith(p) for p in ("show all data from", "display all data from", "read table", "select * from", "display ", "show ", "read ")):
-        # Try to find a table alias in the query
-        canonical_table = None
-        for alias in sorted(TABLE_ALIAS_MAP.keys(), key=len, reverse=True):
-            if alias in q:
-                canonical_table = resolve_table_name(alias)
-                break
-        
-        if canonical_table:
-            sql_to_execute = f"SELECT * FROM {canonical_table} LIMIT 100;"
-            tool_name = "execute_sql"
-            args = {"sql": sql_to_execute}
+        if _is_complex_query(q):
+            # Let the LLM handle it — do NOT set tool_name here so the
+            # fallback at line ~225 routes it to ask_database.
+            logger.info(
+                f"[QueryRouter] Complex query detected in 'show/display' branch. "
+                f"Bypassing fast path, routing to ask_database: '{question}'"
+            )
+        else:
+            # Try to find a table alias in the query
+            canonical_table = None
+            for alias in sorted(TABLE_ALIAS_MAP.keys(), key=len, reverse=True):
+                if alias in q:
+                    canonical_table = resolve_table_name(alias)
+                    break
+
+            if canonical_table:
+                sql_to_execute = f"SELECT * FROM {canonical_table} LIMIT 100;"
+                tool_name = "execute_sql"
+                args = {"sql": sql_to_execute}
 
     # 11. Database Query Templates Match
     if not tool_name and not sql_to_execute:
@@ -289,7 +342,12 @@ async def route_query(question: str) -> dict | None:
 
         elif tool_name == "ask_database":
             res = await ask_database(**args)
-            answer = res
+            # ask_database now returns a structured dict;
+            # extract the human-readable answer string.
+            if isinstance(res, dict):
+                answer = res.get("answer", str(res))
+            else:
+                answer = res
 
         else:
             raise ValueError(f"Unknown matched tool: {tool_name}")

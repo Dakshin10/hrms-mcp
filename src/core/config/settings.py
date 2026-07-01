@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     schema_cache_ttl_seconds: int = 300
     groq_api_key: str = Field(default="", validation_alias="GROQ_API_KEY")
-    groq_model: str = "llama-3.1-8b-instant"
+    groq_model: str = Field(default="openai/gpt-oss-120b", validation_alias="GROQ_MODEL")
     groq_max_tokens: int = 300
     groq_temperature: float = 0.0
     enable_langgraph: bool = Field(default=False, validation_alias="ENABLE_LANGGRAPH")
