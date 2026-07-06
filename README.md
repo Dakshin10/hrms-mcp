@@ -1,14 +1,20 @@
-# 🚀 Minori HRMS Analytics MCP Server
+# 📊 HRMS Analytics MCP Server
 
-Enterprise-grade **Model Context Protocol (MCP) server** for HRMS analytics, KPI intelligence, workforce insights, and autonomous AI agents. Built with Python, Cloudflare D1, and Groq LLM pipelines.
+[![Python](https://img.shields.io/badge/Python-3.12%2B-blue?logo=python&logoColor=white&style=for-the-badge)](https://python.org)
+[![MCP](https://img.shields.io/badge/Model%20Context%20Protocol-Supported-purple?logo=model-context-protocol&style=for-the-badge)](https://modelcontextprotocol.io)
+[![Cloudflare D1](https://img.shields.io/badge/Cloudflare-D1-orange?logo=cloudflare&logoColor=white&style=for-the-badge)](https://cloudflare.com)
+[![Groq](https://img.shields.io/badge/LLM-Groq%20Pipeline-red?logo=groq&logoColor=white&style=for-the-badge)](https://groq.com)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-This repository is a pure MCP server platform that exposes all analytics, database exploration, synchronization, and autonomous agents exclusively as interoperable MCP tools.
+An enterprise-grade **Model Context Protocol (MCP) server** for HRMS analytics, workforce intelligence, and autonomous HR agents. Built on top of a relational database engine (Cloudflare D1/SQLite) and powered by high-performance LLM Text-to-SQL translation pipelines (Groq).
+
+This platform acts as an intelligent bridge, allowing any MCP client (such as Claude Desktop, Cursor, or autonomous AI agents) to explore database schemas, perform analytics, sync with third-party tools like Google Sheets, and coordinate multi-step research through memory-enabled agentic routines.
 
 ---
 
 ## 🗺️ System Architecture
 
-This repository facilitates natural language querying over relational HRMS databases using a structured Text-to-SQL translation and verification pipeline.
+The server translates natural language queries into safe, optimized SQL execution plans through a validated multi-stage query pipeline.
 
 ```mermaid
 graph TD
@@ -49,194 +55,220 @@ graph TD
 ```
 
 ### Data & Execution Flow
-1. **Query Ingestion**: The client calls one of the server's tools (e.g., `ask_database`, `hr_insights`, `hr_agent`).
-2. **Fast-Path Check**: The `FastPathHandler` executes pattern matching for simple queries (e.g., "count employees") and runs predefined SQL, bypassing LLM translation.
-3. **Query Cache**: If the query misses the fast path, the in-memory cache is checked for a matching question.
-4. **Table & Schema Scoping**: The `TableSelector` evaluates semantic keywords to identify relevant tables, and the `SchemaBuilder` constructs a trimmed schema definition context for the prompt.
-5. **Prompt Construction**: The `PromptBuilder` resolves terminology definitions from a `BusinessDictionary` (handling HR jargon like "FTR" or "rework") and formats instructions with few-shot SQL examples.
-6. **SQL Generation**: The query is sent to the `LLMService` (using Groq) which generates the SQL command.
-7. **SQL Guardrail Validation**: The `SQLValidator` evaluates the query structure and blocks mutations (`DROP`, `DELETE`, `UPDATE`, `INSERT`, `ALTER`, etc.) to guarantee read-only operations.
-8. **D1 Execution**: The read-only query is run by the `D1Client` database service.
-9. **NL Response Formulator**: The `AnswerGenerator` converts the SQL records back into a coherent, structured markdown summary returned to the client.
+
+1. **Query Ingestion**: The client invokes an analytical tool (e.g., `ask_database`, `hr_insights`, `hr_agent`).
+2. **Fast-Path Evaluation**: The `FastPathHandler` matches routine query patterns (e.g., simple counts, aggregations) to run pre-compiled SQL, bypassing LLM processing.
+3. **Query Caching**: A memory cache checks if a identical request has been processed recently.
+4. **Context Isolation**: The `TableSelector` performs keyphrase mapping to isolate relevant tables, and `SchemaBuilder` compiles a minimal, token-efficient schema context.
+5. **Prompt Synthesis**: The `PromptBuilder` resolves project-specific terms from a `BusinessDictionary` (e.g., interpreting definitions like "FTR" or "rework") and binds few-shot SQL examples.
+6. **SQL Generation**: The LLM engine (Groq) generates standard SQL based on contextual rules.
+7. **Security Guardrails**: The `SQLValidator` parses the SQL statement and blocks any mutating keywords (`DROP`, `DELETE`, `UPDATE`, `INSERT`, `ALTER`, etc.) to enforce read-only operations.
+8. **Execution**: The query is executed safely against Cloudflare D1/SQLite.
+9. **NL Response Formulator**: The `AnswerGenerator` packages raw record payloads into clean, semantic markdown tables and narratives.
 
 ---
 
 ## 📂 Project Directory Structure
 
-```
+```text
 analytics-mcp/
-├── data/                       # Dataset imports and seed templates
-│   ├── imports/                # Target folder for runtime timesheet imports
-│   └── seed/                   # Pre-defined mock CSV and Excel database records
-├── docs/                       # System design and documentation directories
-├── infra/                      # Infrastructure scripts (Cloudflare configs, Docker)
-├── logs/                       # Application event and error logs
-├── scripts/                    # Helper scripts for system diagnostics
-├── src/                        # Main source directory
-│   ├── agent/                  # Multi-turn autonomous agent & session memory
-│   │   ├── conversation_memory.py  # In-memory sliding history manager
-│   │   ├── hr_agent.py             # LangChain/LangGraph ReAct agent loop
-│   │   └── run_agent.py            # Local agent runner
-│   ├── core/                   # Shared configurations, logging and exceptions
+├── data/                       # Datasets, imports, and database seeds
+│   ├── imports/                # Runtime target folder for CSV/Excel timesheet imports
+│   └── seed/                   # Pre-defined mock database records
+├── docs/                       # Architecture diagrams and system design files
+├── infra/                      # Cloudflare configurations and infrastructure files
+├── logs/                       # Application runtime logs
+├── scripts/                    # Command-line diagnostics and system helpers
+├── src/                        # Primary source directory
+│   ├── agent/                  # Autonomous ReAct agent and conversation memory
+│   │   ├── conversation_memory.py  # Sliding conversation context window
+│   │   ├── hr_agent.py             # LangChain/LangGraph agent routine
+│   │   └── run_agent.py            # Local agent execution harness
+│   ├── core/                   # Configurations, global exceptions, and logs
 │   ├── mcp_server/             # Model Context Protocol registration and runner
-│   │   └── server.py           # Pure MCP server main runner
-│   ├── schemas/                # Request & response validation models
-│   ├── services/               # Internal backend business logic
-│   │   ├── ai/                 # Text-to-SQL pipelines (cache, validators, LLM, text_to_sql)
-│   │   ├── analytics/          # Department metrics, utilization, rework statistics
-│   │   └── database/           # Relational D1 client connections, repositories & helpers
-│   └── tools/                  # FastMCP modular tool implementation directory
-│       ├── db_tools.py         # Table, sql execution, schema, and cache tools
-│       ├── employee_tools.py   # Employee management tools
-│       ├── hr_tools.py         # HR insights, HR agent, and session clearing tools
-│       ├── sheet_tools.py      # Google Sheets connection and fetching tools
-│       └── timesheet_tools.py  # Excel and CSV timesheet loading tools
-└── tests/                      # Verification suite
-    ├── unit/                   # Modular unit tests (pytest)
-    ├── benchmark_queries.json  # Comprehensive SQL/Answer evaluation test cases
-    └── run_benchmarks.py       # Pipeline execution benchmark harness
+│   │   └── server.py           # Core MCP server launcher
+│   ├── schemas/                # Data verification and request validation schemas
+│   ├── services/               # Underlying business logic
+│   │   ├── ai/                 # Text-to-SQL logic, validator, cache, and LLM
+│   │   ├── analytics/          # HR KPIs, employee utilization, rework, and FTR rates
+│   │   └── database/           # D1 client connection pool and repository services
+│   └── tools/                  # FastMCP modular tool declarations
+│       ├── db_tools.py         # Schema inspections, raw SQL, and cache management
+│       ├── employee_tools.py   # Roster lookup and search utilities
+│       ├── hr_tools.py         # Advanced analytical routing and agent tools
+│       ├── sheet_tools.py      # Google Sheets connection and fetching layers
+│       └── timesheet_tools.py  # Local CSV/Excel data loaders
+└── tests/                      # Testing & benchmarking suites
+    ├── unit/                   # Unit test suite (pytest)
+    ├── benchmark_queries.json  # Reference queries and validation metrics
+    └── run_benchmarks.py       # Query translation evaluation runner
 ```
 
 ---
 
 ## 🗜️ Exposed MCP Tools
 
-The server registers **15 specialized tools** available to any Model Context Protocol client:
+The server exposes **15 highly specialized tools** categorized below:
 
 ### 1. Database Exploration & SQL Tools
-*   `list_tables`: Enumerate all available tables.
-*   `describe_table(table_name: str)`: Get schema definition (columns, types, keys) for a specific table.
-*   `execute_sql(sql: str)`: Run read-only SQLite SELECT queries with schema-matching guardrails.
-*   `ask_database(question: str)`: Translate natural language into optimized SQL, run it, and generate a text response.
-*   `cache_stats`: Get current hit rate and counts for the query caching layer.
+| Tool Name | Parameters | Description |
+| :--- | :--- | :--- |
+| `list_tables` | *None* | List all relational tables present in the database. |
+| `describe_table` | `table_name: str` | Retrieve the columns, data types, and keys for a specific table. |
+| `execute_sql` | `sql: str` | Execute arbitrary SQL queries safely (strictly read-only). |
+| `ask_database` | `question: str` | Solve natural language questions using automated Text-to-SQL. |
+| `cache_stats` | *None* | Retrieve hit rates and occupancy statistics of the SQL translation cache. |
 
 ### 2. Employee Lookup Tools
-*   `get_all_employees`: Retrieve full listings of all registered employees in the organization.
-*   `get_employee_by_id(employee_id: str)`: Find detailed information for a specific worker by their employee ID (e.g. `EMP0001`).
-*   `get_employees_by_department(department: str)`: Retrieve employee rosters belonging to a specified department.
-*   `search_employees(keyword: str)`: Perform fuzzy matching on employees by name, email, department, or job title.
+| Tool Name | Parameters | Description |
+| :--- | :--- | :--- |
+| `get_all_employees` | *None* | Fetch the complete employee roster. |
+| `get_employee_by_id` | `employee_id: str` | Find detailed data for a specific employee profile. |
+| `get_employees_by_department` | `department: str` | List employees belonging to a specific department. |
+| `search_employees` | `keyword: str` | Perform a fuzzy text search across names, titles, departments, or emails. |
 
 ### 3. HR Analytical & Agentic Tools
-*   `hr_insights(question: str)`: Route HR-specific queries (top performers, ETA delays, FTR rate, rework, utilization) to analytical services.
-*   `hr_agent(question: str, session_id: str)`: Ask multi-step queries combining multiple analysis phases while retaining context memory.
-*   `clear_session(session_id: str)`: Clear conversation history for a given session ID.
+| Tool Name | Parameters | Description |
+| :--- | :--- | :--- |
+| `hr_insights` | `question: str` | Run analytical queries focusing on core KPIs like utilization, FTR, and rework. |
+| `hr_agent` | `question: str`, `session_id: str` | Run a multi-turn analytical loop using persistent conversational memory. |
+| `clear_session` | `session_id: str` | Clear history context for a given session. |
 
 ### 4. Data Integration & Loaders
-*   `connect_google_sheet(sheet_url: str)`: Authenticate and link a live Google Spreadsheet URL or ID.
-*   `fetch_sheet_data(sheet_url: str, worksheet_name: str)`: Fetch live rows from a specific worksheet.
-*   `load_timesheets(file_path: str)`: Load timesheet exports (CSV/Excel) from the local directory into the relational database.
+| Tool Name | Parameters | Description |
+| :--- | :--- | :--- |
+| `connect_google_sheet` | `sheet_url: str` | Authenticate and link a live Google Spreadsheet. |
+| `fetch_sheet_data` | `sheet_url: str`, `worksheet_name: str` | Fetch rows directly from a specific worksheet. |
+| `load_timesheets` | `file_path: str` | Parse local CSV or Excel sheets and insert data into the database. |
 
 ---
 
 ## 🗄️ Database Schema & Data Model
 
-The server queries a relational Cloudflare D1/SQLite schema comprising the following core tables:
+The D1 database features an optimized, relational schema mapping key HR variables:
 
 ### 1. `employees`
-Stores employee profiles and core organization variables:
-*   `employee_id` (TEXT, Primary Key): Unique identifier (e.g., `EMP0001`).
-*   `first_name` & `last_name` (TEXT)
-*   `email` (TEXT, Unique)
-*   `department` & `job_title` (TEXT): Team classification and role descriptor.
-*   `employment_type` (TEXT): Classification (e.g., `FULL_TIME`, `CONTRACTOR`).
-*   `date_of_joining` (TEXT): ISO date string.
-*   `annual_salary_inr` (INTEGER): Annual pay in Indian Rupees.
-*   `manager_id` (TEXT): Self-referential employee ID link.
-*   `status` (TEXT): Account status (e.g., `ACTIVE`, `INACTIVE`).
+Contains identity, structure, and compensation metrics.
+| Column | Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `employee_id` | `TEXT` | Primary Key | Unique ID (e.g., `EMP0001`) |
+| `first_name` | `TEXT` | Not Null | Given name |
+| `last_name` | `TEXT` | Not Null | Family name |
+| `email` | `TEXT` | Unique | Employee email |
+| `department` | `TEXT` | - | Assigned department |
+| `job_title` | `TEXT` | - | Current role |
+| `employment_type`| `TEXT` | - | E.g., `FULL_TIME`, `CONTRACTOR` |
+| `date_of_joining`| `TEXT` | - | ISO Joining Date (`YYYY-MM-DD`) |
+| `annual_salary_inr`| `INTEGER` | - | Salary in INR |
+| `manager_id` | `TEXT` | - | Self-referencing link to supervisor's `employee_id` |
+| `status` | `TEXT` | - | Account state (e.g., `ACTIVE`, `INACTIVE`) |
 
 ### 2. `timesheets`
-Frictional log of individual tasks completed by workers:
-*   `employee_id` (TEXT) & `employee_name` (TEXT)
-*   `task_name` & `task_status` (TEXT)
-*   `eta_hours` (REAL): Estimated completion time.
-*   `actual_hours` (REAL): Logged completion time.
-*   `ftr_flag` (INTEGER, `0` or `1`): **First Time Right** flag. A value of `1` indicates no rework was needed.
-*   `rework_flag` (INTEGER, `0` or `1`): Rework flag. A value of `1` indicates the task required corrective action.
-*   `completion_date` (TEXT)
-*   `month` (INTEGER) & `year` (INTEGER)
+Granular log records detailing discrete developer and operations tasks.
+| Column | Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `employee_id` | `TEXT` | Foreign Key | Links to `employees.employee_id` |
+| `employee_name` | `TEXT` | - | Redundant display name |
+| `task_name` | `TEXT` | - | Name of task |
+| `task_status` | `TEXT` | - | E.g., `COMPLETED`, `IN_PROGRESS` |
+| `eta_hours` | `REAL` | - | Estimated hours required |
+| `actual_hours` | `REAL` | - | Actual hours spent |
+| `ftr_flag` | `INTEGER` | `0` or `1` | First Time Right flag (1 = no rework, 0 = rework) |
+| `rework_flag` | `INTEGER` | `0` or `1` | Rework flag (1 = task required rework) |
+| `completion_date`| `TEXT` | - | ISO Completion Date |
+| `month` | `INTEGER` | - | Numeric month (1-12) |
+| `year` | `INTEGER` | - | Calendar year |
 
 ### 3. `timesheet_summary`
-Aggregated monthly metrics for team analysis:
-*   `employee_name` (TEXT) & `role` (TEXT)
-*   `month` (TEXT)
-*   `total_tasks` (INTEGER) & `total_hours` (REAL)
-*   `rework_tasks` (INTEGER)
-*   `utilization_percentage` (REAL): Portion of time spent on billable activities.
+Monthly aggregated statistics on performance, productivity, and utilization.
+| Column | Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `employee_name` | `TEXT` | - | Employee name |
+| `role` | `TEXT` | - | Job role |
+| `month` | `TEXT` | - | Text month (e.g., `January`) |
+| `total_tasks` | `INTEGER` | - | Count of total logged tasks |
+| `total_hours` | `REAL` | - | Cumulative actual hours |
+| `rework_tasks` | `INTEGER` | - | Count of tasks requiring rework |
+| `utilization_percentage` | `REAL` | - | Percentage of working hours spent on tasks |
 
 ### 4. `task_logs`
-Historical project task listings with estimation metadata:
-*   `employee_name` & `role` (TEXT)
-*   `task_description` (TEXT)
-*   `actual_hours` (REAL)
-*   `eta` (TEXT)
-*   `confidence` (TEXT): Dev confidence rating.
+Historical project task logs and estimation confidence data.
+| Column | Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `employee_name` | `TEXT` | - | Worker name |
+| `role` | `TEXT` | - | Worker role |
+| `task_description`| `TEXT` | - | Full task description text |
+| `actual_hours` | `REAL` | - | Hours spent on task |
+| `eta` | `TEXT` | - | Projected deadline text or category |
+| `confidence` | `TEXT` | - | Developer confidence indicator |
 
 ---
 
 ## 🛠️ Getting Started
 
-### 1. Prerequisites & Environment Setup
+### 1. Installation & Environment Setup
 
-Configure the development environment using Python 3.12 (or newer):
+Configure the development environment using Python 3.12+:
 
 ```bash
 # 1. Create a virtual environment
 python -m venv venv
 
-# 2. Activate the virtual environment
-# On Windows PowerShell:
+# 2. Activate the environment
+# On Windows (PowerShell):
 .\venv\Scripts\Activate.ps1
-# On Windows CMD:
+# On Windows (CMD):
 .\venv\Scripts\activate.bat
 # On macOS/Linux:
 source venv/bin/activate
 
-# 3. Install required dependencies
+# 3. Install dependencies
 pip install -r requirements.txt
 pip install pytest
 ```
 
-### 2. Configuration
+### 2. Environment Variables
 
-Copy the `.env.example` file to `.env` and populate your credentials:
+Create a configuration file in the project root:
 
 ```bash
 cp .env.example .env
 ```
 
-Ensure the following variables are configured in `.env`:
-*   `D1_DATABASE_ID`: Cloudflare D1 database ID.
-*   `D1_API_TOKEN`: Cloudflare client API token.
-*   `D1_ACCOUNT_ID`: Cloudflare Account ID.
-*   `GROQ_API_KEY`: API Key for Groq Cloud.
-*   `DEBUG_MODE`: Set to `True` to enable raw SQL output in responses.
+Define the following environment variables inside `.env`:
+
+```env
+D1_DATABASE_ID=your_cloudflare_d1_database_id
+D1_API_TOKEN=your_cloudflare_d1_api_token
+D1_ACCOUNT_ID=your_cloudflare_d1_account_id
+GROQ_API_KEY=your_groq_api_key
+DEBUG_MODE=False
+```
 
 ---
 
 ## 📋 Running the MCP Server
 
-The server can be launched in two different transport modes.
+The server supports two distinct communication protocols. Choose the transport method matching your client interface:
 
 ### Option A: Standard Stdio Transport (Default)
-Suitable for local agent integrations (e.g. Claude Desktop, Cursor, local python clients) where the client communicates directly over standard input/output streams:
+Best for local application clients (e.g., Claude Desktop, Cursor) communicating directly over system standard input and output streams.
 
 ```bash
-# Run over stdio (default)
 python -m src.mcp_server.server
 ```
 
 ### Option B: Server-Sent Events (SSE) Transport
-Suitable for remote deployment as a network-accessible service. The server runs as an HTTP server that streams events to clients:
+Enables the server to run as a network API, exposing HTTP routes for remote clients to receive real-time streams and post requests.
 
 ```bash
-# Set environment variables to run in SSE mode
-# On Windows PowerShell:
+# On Windows (PowerShell):
 $env:MCP_TRANSPORT="sse"
 $env:MCP_PORT="8000"
 $env:MCP_HOST="0.0.0.0"
 python -m src.mcp_server.server
 
-# On CMD:
+# On Windows (CMD):
 set MCP_TRANSPORT=sse
 set MCP_PORT=8000
 set MCP_HOST=0.0.0.0
@@ -246,35 +278,35 @@ python -m src.mcp_server.server
 MCP_TRANSPORT=sse MCP_PORT=8000 MCP_HOST=0.0.0.0 python -m src.mcp_server.server
 ```
 
-Once running, the client can connect to the Server-Sent Events endpoint at `http://localhost:8000/sse` and post messages to `http://localhost:8000/message`.
+*When active, clients can establish streams at `http://localhost:8000/sse` and POST message objects to `http://localhost:8000/message`.*
 
 ---
 
 ## 🔍 Testing with MCP Inspector
 
-Inspect the server capabilities and interact with exposed tools using the browser-based `@modelcontextprotocol/inspector`:
+Test and inspect tool definitions interactively using the official `@modelcontextprotocol/inspector` web interface:
 
 ```bash
-# On Windows (utilizing the venv python executable):
+# On Windows:
 npx -y @modelcontextprotocol/inspector venv/Scripts/python -m src.mcp_server.server
 
 # On macOS/Linux:
 npx -y @modelcontextprotocol/inspector venv/bin/python -m src.mcp_server.server
 ```
 
-Once loaded in your browser, you can run any of the 15 registered tools to test schema reading, employee roster fetching, CSV timesheet loading, or NL SQL questioning.
+Open the local URL displayed in your console to verify, inspect, and trigger the 15 available server tools.
 
 ---
 
 ## 🔌 Claude Desktop Configuration
 
-To connect this MCP server to Claude Desktop, add the following to your `claude_desktop_config.json` (located at `%APPDATA%\Claude\claude_desktop_config.json` on Windows, or `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Configure Claude Desktop to link this server dynamically. Modify your local configuration file (located at `%APPDATA%\Claude\claude_desktop_config.json` on Windows, or `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
 
 ```json
 {
   "mcpServers": {
-    "minori-hrms-analytics": {
-      "command": "C:/path/to/minori-hrms-mcp/venv/Scripts/python",
+    "hrms-analytics-mcp": {
+      "command": "C:/path/to/hrms-analytics-mcp/venv/Scripts/python",
       "args": ["-m", "src.mcp_server.server"],
       "env": {
         "D1_DATABASE_ID": "your_d1_database_id",
@@ -288,54 +320,55 @@ To connect this MCP server to Claude Desktop, add the following to your `claude_
 }
 ```
 
-> [!NOTE]
-> Make sure to replace `C:/path/to/minori-hrms-mcp` with the absolute path to your repository, use forward slashes (`/`) even on Windows in the JSON configuration, and insert your actual API credentials.
+> [!IMPORTANT]
+> - Replace `C:/path/to/hrms-analytics-mcp` with your project's absolute directory path.
+> - Always use forward slashes (`/`) even on Windows platforms inside the JSON configuration.
+> - Replace all credential variables with your real Cloudflare and Groq credentials.
 
 ---
 
 ## 📊 Google Sheets Integration
 
-The Analytics MCP server supports secure integration with the Google Sheets API. All OAuth operations and credentials remain strictly server-side and are never exposed to any frontend dashboard.
+The Analytics MCP server provides secure, authenticated connections to Google Sheets APIs. Credentials and authorization keys remain entirely server-side.
 
-### 1. Placement of Credentials
-To enable the Google Sheets tools, you must download your OAuth 2.0 Desktop Client credentials from the Google Cloud Console and place them in the following directory:
+### 1. Credentials Configuration
+To activate Google Sheets tools, retrieve your Google Cloud Desktop Client credential configuration JSON and place it exactly at:
 ```text
 credentials/client_secret.json
 ```
-*(This folder and its contents are automatically ignored by git via `.gitignore` to prevent secret exposure.)*
+> [!NOTE]
+> The `credentials/` folder is pre-registered in `.gitignore` to prevent committing sensitive keys to remote repositories.
 
-### 2. Authorization Flow
-The first time a Google Sheets tool is invoked:
-1. The server starts a local OAuth2 authorization flow.
-2. A browser window will open asking you to authorize the application.
-3. Once authorized, a `credentials/token.json` file is created automatically to store authentication tokens.
-4. Subsequent requests refresh this token silently as needed.
+### 2. Authorization Handshake
+When first calling any Google Sheets tool:
+1. The server starts a local OAuth2 authorization routine.
+2. Your system will open a browser window requesting account permissions.
+3. Upon approval, the server creates `credentials/token.json` locally to store the authentication tokens.
+4. Subsequent requests refresh this token in the background automatically.
 
-### 3. Exposed Tools
-*   `connect_google_sheet(sheet_url: str)`:
-    - Verifies credentials and links a Google Sheet by its full URL or its 44-character ID.
-    - Returns sheet information and worksheet lists.
-*   `fetch_sheet_data(sheet_url: str, worksheet_name: str)`:
-    - Fetches records from the specified worksheet within the sheet.
+### 3. Integrated Tools
+*   `connect_google_sheet(sheet_url: str)`: Link a Google Sheet. Resolves connection status and worksheet structures.
+*   `fetch_sheet_data(sheet_url: str, worksheet_name: str)`: Read rows from a specific worksheet directly into the active context.
 
-### 4. Security Considerations
-- **No Direct Frontend Access**: The frontend dashboard communicates solely with the MCP server; it never accesses Google APIs directly.
-- **Git Safety**: All files inside `credentials/` and all `.json` files (excluding `package.json` manifests) are blacklisted in `.gitignore`.
+### 4. Security Enforcement
+*   **Decoupled Frontend**: Clients interact strictly with the MCP protocol; they never communicate directly with Google's API endpoints.
+*   **Git Protection**: Wildcard rules in `.gitignore` block credentials or generated auth tokens from leaking.
 
 ---
 
 ## 🧪 Testing & Validation
 
 ### 1. Run Unit Tests
-Run the test suite using `pytest` inside the virtual environment:
+Validate functional structures and classes via `pytest`:
+
 ```bash
-# Run tests using the environment's python package
 venv/Scripts/python -m pytest tests/unit
 ```
 
-### 2. Run the Benchmark Suite
-Evaluate Text-to-SQL translation adherence, Fast-Path triggers, cache performance, and validation security:
+### 2. Run Benchmarks
+Evaluate translation accuracy and pipeline timing stats:
+
 ```bash
 venv/Scripts/python -m tests.run_benchmarks
 ```
-The reports are stored in `tests/benchmark_results/latest.json`.
+*Comprehensive results are exported to `tests/benchmark_results/latest.json`.*
